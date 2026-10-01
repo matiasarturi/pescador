@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071a22">
+  <title>Pesca Argentina</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#mapa" aria-label="Pesca Argentina, mapa"><span class="brand-mark">⌁</span><span>Pesca <b>Argentina</b></span></a>
+    <div class="header-actions"><span id="gps-status" class="gps-status"><i></i> Sin GPS</span><button class="icon-button" id="header-weather" aria-label="Ver clima de mi ubicación">☼</button><button class="icon-button" id="header-locate" aria-label="Encontrar mi ubicación">◎</button></div>
+  </header>
+  <main id="app-main">
+    <section class="tab-page active" id="page-mapa" aria-label="Mapa">
+      <div id="map"></div>
+      <div class="map-top-controls">
+        <label class="map-filter"><span>⚲</span><select id="map-species-filter" aria-label="Filtrar por especie"><option value="all">Todos los peces</option></select></label>
+        <select id="map-sort" class="map-sort" aria-label="Ordenar puntos"><option value="recent">Más recientes</option><option value="near">Más cercanos</option></select>
+      </div>
+      <div class="map-legend"><span><i class="legend-fish"></i> Pesca</span><span><i class="legend-shop"></i> Tienda</span></div>
+      <button id="add-point-btn" class="fab-add"><span>＋</span> Nuevo punto</button>
+      <div id="map-hint" class="map-hint hidden">Tocá el mapa para ubicar el punto <button id="cancel-map-pick">Cancelar</button></div>
+    </section>
+    <section class="tab-page content-page" id="page-capturas" aria-label="Capturas">
+      <div class="page-heading"><div><p class="eyebrow">TU BITÁCORA</p><h1>Capturas</h1></div><button id="add-catch-btn" class="primary-button">＋ Registrar</button></div>
+      <div id="catch-stats" class="stats-row"></div>
+      <div class="filter-row"><select id="catch-species-filter"><option value="all">Todas las especies</option></select><select id="catch-place-filter"><option value="all">Todos los puntos</option></select></div>
+      <div class="filter-row date-filter"><label>Desde<input type="date" id="catch-date-from"></label><label>Hasta<input type="date" id="catch-date-to"></label><button id="clear-catch-filters" class="text-button">Limpiar</button></div>
+      <div id="catch-list" class="card-list"></div>
+    </section>
+    <section class="tab-page content-page" id="page-mareas" aria-label="Mareas y luna">
+      <div class="page-heading"><div><p class="eyebrow">RITMOS DEL AGUA</p><h1>Mareas <span class="heading-slash">/</span> Luna</h1></div><span class="moon-large" id="current-moon">◐</span></div>
+      <div class="moon-card" id="moon-card"></div>
+      <figure class="moon-calendar"><img src="uploads/calendario_de_pesca.png" alt="Calendario lunar de pesca" loading="lazy"><figcaption>Calendario lunar de pesca</figcaption></figure>
+      <div class="section-heading"><div><h2>Mareas de La Plata</h2><p>Horarios automáticos de pleamar y bajamar.</p></div></div>
+      <label class="tide-date-picker">Fecha<input type="date" id="tide-date"></label>
+      <div id="automatic-tides" class="automatic-tides" aria-live="polite"></div>
+      <div class="section-heading"><div><h2>Mis tablas por punto</h2><p>Agregá observaciones propias para tus lugares.</p></div></div>
+      <div class="form-card tide-editor">
+        <label>Punto de pesca<select id="tide-place"></select></label>
+        <div class="tide-fields"><label><span class="tide-high">Pleamar 1</span><input type="time" id="tide-high-1"></label><label><span class="tide-low">Bajamar 1</span><input type="time" id="tide-low-1"></label></div>
+        <div class="tide-fields"><label><span class="tide-high">Pleamar 2</span><input type="time" id="tide-high-2"></label><label><span class="tide-low">Bajamar 2</span><input type="time" id="tide-low-2"></label></div>
+        <label>Notas de la jornada<textarea id="tide-notes" rows="2" placeholder="Altura, corriente, observaciones..."></textarea></label>
+        <button id="save-tide-btn" class="primary-button full-button">Guardar tabla</button>
+      </div>
+      <div class="section-heading"><h2>Tablas guardadas</h2></div>
+      <div id="tide-list" class="card-list"></div>
+    </section>
+    <section class="tab-page content-page" id="page-tiendas" aria-label="Tiendas">
+      <div class="page-heading"><div><p class="eyebrow">EQUIPATE</p><h1>Tiendas</h1></div><button id="add-shop-btn" class="primary-button">＋ Agregar</button></div>
+      <button id="toggle-shops" class="visibility-toggle"><span class="visibility-dot"></span><span>Mostrando tiendas en el mapa</span><span class="toggle-switch on"><i></i></span></button>
+      <div class="shop-search-wrap"><span>⌕</span><input id="shop-search" type="search" placeholder="Buscar tienda o localidad..."></div>
+      <div id="shop-list" class="card-list"></div>
+    </section>
+    <section class="tab-page content-page" id="page-buscar" aria-label="Buscar">
+      <div class="page-heading search-heading"><div><p class="eyebrow">EXPLORÁ CERCA TUYO</p><h1>Buscar</h1></div></div>
+      <label class="search-box"><span>⌕</span><input id="global-search" type="search" placeholder="Punto, especie o tienda..."><button id="clear-search" aria-label="Limpiar búsqueda">×</button></label>
+      <button id="nearby-search" class="nearby-button"><span>◎</span><span>Ordenar por cercanía</span><span class="nearby-state">Activar</span></button>
+      <div id="search-results" class="card-list search-results"></div>
+    </section>
+  </main>
+  <nav class="bottom-nav" aria-label="Navegación principal">
+    <button class="nav-item active" data-tab="mapa"><span class="nav-icon">⌖</span><span>Mapa</span></button>
+    <button class="nav-item" data-tab="capturas"><span class="nav-icon">◉</span><span>Capturas</span></button>
+    <button class="nav-item" data-tab="mareas"><span class="nav-icon">◐</span><span>Mareas/Luna</span></button>
+    <button class="nav-item" data-tab="tiendas"><span class="nav-icon">⌂</span><span>Tiendas</span></button>
+    <button class="nav-item" data-tab="buscar"><span class="nav-icon">⌕</span><span>Buscar</span></button>
+  </nav>
+  <div id="modal-root"></div>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
