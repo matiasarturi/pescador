@@ -184,8 +184,7 @@ async function loadAutomaticTides() {
   container.dataset.date = date; container.dataset.loaded = 'false';
   container.innerHTML = '<div class="auto-tide-status">Cargando tabla de La Plata…</div>';
   try {
-    https://pescador.matiasarturi.workers.dev/api/tides?date=2026-10-01
-
+    const response = await fetch('/api/tides?date=' + encodeURIComponent(date));
     const result = await response.json();
     if (requestId !== tideRequestId) return;
     if (!response.ok) throw new Error(result.error || 'No se pudo cargar la tabla.');
